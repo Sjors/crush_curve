@@ -42,6 +42,7 @@ namespace :data do
 
   desc "Process existing data"
   task process: :environment do
+    # Calculate daily stats
     the_day = nil
     Case.where("day >= ?", Date.new(2020,4,9)).order(day: :asc).each do |c|
       puts "#{ c.day.to_date }..." if the_day != c.day
@@ -71,6 +72,11 @@ namespace :data do
           break
         end
       end
+    end
+
+    # Sort provinces by severity on reference date
+    Province.all.collect{|p| [p.cases.where('date(day) = ?', Date.new(2020,4,9).to_date).sum(:reports), p]}.sort.reverse.each_with_index do |p,i|
+      p[1].update position: i
     end
   end
 end

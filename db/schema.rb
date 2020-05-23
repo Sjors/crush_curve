@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_23_100826) do
+ActiveRecord::Schema.define(version: 2020_05_23_112822) do
 
   create_table "cases", force: :cascade do |t|
     t.integer "municipality_id", null: false
@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(version: 2020_05_23_100826) do
     t.integer "deaths"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "new_reports"
     t.index ["municipality_id"], name: "index_cases_on_municipality_id"
   end
 

@@ -39,4 +39,38 @@ namespace :data do
       break if !query["exceededTransferLimit"]
     end
   end
+
+  desc "Process existing data"
+  task process: :environment do
+    the_day = nil
+    Case.where("day >= ?", Date.new(2020,4,9)).order(day: :asc).each do |c|
+      puts "#{ c.day.to_date }..." if the_day != c.day
+      the_day = c.day
+      # If no reports today, assume 0 new cases
+      if c.reports.nil?
+        c.update new_reports: 0
+        next
+      end
+
+      reference_day = c
+
+      loop do
+        reference_day = reference_day.yesterday
+        if reference_day.nil?
+          throw "Found 1+ day gap in data on #{ c.day.to_date } in #{ c.municipality.name } (#{ c.municipality.cbs_id }), bailing out"
+        end
+
+        if !reference_day.reports.nil?
+          # Assume new cases are recent (alternative: take average per day)
+          new_reports = c.reports - reference_day.reports
+          if new_reports < 0
+            # Ignore corrections
+            new_reports = 0
+          end
+          c.update new_reports: new_reports
+          break
+        end
+      end
+    end
+  end
 end

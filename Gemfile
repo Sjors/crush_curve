@@ -32,6 +32,11 @@ gem 'geoservices', github: 'Sjors/geoservices-ruby', branch: "dev"
 
 gem 'friendly_id', '~> 5.2.4'
 
+group :production do
+  # Memcachier
+  gem 'dalli'
+end
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

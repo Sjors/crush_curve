@@ -3,14 +3,7 @@ class ProvincesController < ApplicationController
     @provinces = Province.all
     latest = Case.last
     if stale?(etag: latest.updated_at, last_modified: latest.updated_at)
-      @days = Case.where("day >= ?", Date.new(2020,4,9)).distinct.order(day: :asc).pluck(:day).collect {|day|
-        {
-          date: day.to_date,
-          cases: Province.all.collect{|province|
-            province.cases.where(day: day).sum(:new_reports)
-          }
-        }
-      }
+      @days = Rails.cache.fetch("Case.daily_per_province") { Case.daily_per_province }
       render component: 'Provinces', props: {
         provinces: @provinces,
         days: @days
@@ -22,14 +15,7 @@ class ProvincesController < ApplicationController
     @province = Province.friendly.find(params[:id])
     latest = Case.last
     if stale?(etag: latest.updated_at, last_modified: latest.updated_at)
-      @days = Case.where("day >= ?", Date.new(2020,4,9)).distinct.order(day: :asc).pluck(:day).collect {|day|
-        {
-          date: day.to_date.strftime("%d/%m") ,
-          cases: @province.municipalities.collect{|municipality|
-            municipality.cases.where(day: day).sum(:new_reports)
-          }
-        }
-      }
+      @days = Rails.cache.fetch("Case.daily_per_municipality(#{ @province.id })") { Case.daily_per_municipality(@province) }
       render component: 'Province', props: {
         province: @province,
         municipalities: @province.municipalities,

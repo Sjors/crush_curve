@@ -35,6 +35,7 @@ gem 'friendly_id', '~> 5.2.4'
 group :production do
   # Memcachier
   gem 'dalli'
+  gem 'connection_pool'
 end
 
 group :development, :test do

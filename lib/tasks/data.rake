@@ -2,7 +2,7 @@ namespace :data do
   desc "Fetch the latest data"
   task fetch: :environment do
     @service = Geoservice::MapService.new(url: "https://services.arcgis.com/nSZVuSZjHpEZZbRo/arcgis/rest/services/Coronavirus_RIVM_vlakken_historie/FeatureServer")
-    @last_fetched = Case.maximum(:esri_id)
+    @last_fetched = Case.maximum(:esri_id) || 0
 
     loop do
       puts "Fetch new records after #{ @last_fetched }..."

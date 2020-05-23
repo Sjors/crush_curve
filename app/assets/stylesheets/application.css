@@ -13,3 +13,29 @@
  *= require_tree .
  *= require_self
  */
+
+table.winners {
+  text-align: center;
+  width: 100%;
+  table-layout: fixed;
+}
+
+td.bad {
+  background-color: #cc0000
+}
+
+td.mediocre {
+  background-color: #997300;
+}
+
+td.better {
+  background-color: #ffd24d;
+}
+
+td.almost {
+  background-color: #ffecb3;
+}
+
+td.good {
+  background-color: #00e600;
+}

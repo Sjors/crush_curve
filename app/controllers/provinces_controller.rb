@@ -1,9 +1,9 @@
 class ProvincesController < ApplicationController
   def index
     @provinces = Province.all
-    render component: 'Provinces', props: {
-      provinces: @provinces,
-      days: Case.where("day >= ?", Date.new(2020,4,9)).distinct.order(day: :asc).pluck(:day).collect {|day|
+    latest = Case.last
+    if stale?(etag: latest.updated_at, last_modified: latest.updated_at)
+      @days = Case.where("day >= ?", Date.new(2020,4,9)).distinct.order(day: :asc).pluck(:day).collect {|day|
         {
           date: day.to_date,
           cases: Province.all.collect{|province|
@@ -11,14 +11,18 @@ class ProvincesController < ApplicationController
           }
         }
       }
-    }
+      render component: 'Provinces', props: {
+        provinces: @provinces,
+        days: @days
+      }
+    end
   end
 
   def show
     @province = Province.friendly.find(params[:id])
-    render component: 'Province', props: {
-      municipalities: @province.municipalities,
-      days: Case.where("day >= ?", Date.new(2020,4,9)).distinct.order(day: :asc).pluck(:day).collect {|day|
+    latest = Case.last
+    if stale?(etag: latest.updated_at, last_modified: latest.updated_at)
+      @days = Case.where("day >= ?", Date.new(2020,4,9)).distinct.order(day: :asc).pluck(:day).collect {|day|
         {
           date: day.to_date.strftime("%d/%m") ,
           cases: @province.municipalities.collect{|municipality|
@@ -26,6 +30,10 @@ class ProvincesController < ApplicationController
           }
         }
       }
-    }
+      render component: 'Province', props: {
+        municipalities: @province.municipalities,
+        days: @days
+      }
+    end
   end
 end

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>CrushCurve</title>
+    <title>Plet de Curve</title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -11,5 +11,13 @@
 
   <body>
     <%= yield %>
+    <footer>
+      <p>
+        Each cell shows the number of positive test results that day. Green is winning.
+        Visualization inspired by Yaneer Bar-Yam from <a href="https://www.endcoronavirus.org">endcoronavirus.org</a>.
+        Data source <a href="https://www.databronnencovid19.nl">RIVM</a> via <a href="http://esri.nl/corona">ESRI NL COVID-19 Hub</a>.
+        Website source code at <a href="https://github.com/Sjors/crush_curve">Github</a>. Twitter: <a href="https://twitter.com/provoost">@provoost</a>
+      </p>
+  </footer>
   </body>
 </html>

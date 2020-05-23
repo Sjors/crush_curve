@@ -17,6 +17,21 @@ class RegionDays extends React.Component {
             ))}
           </tr>
         ))}
+        <tr />
+        { this.props.feeds &&
+          <tr>
+            <td />
+            {this.props.feeds.map(feed =>(
+              <td>
+                <a href={ feed.url } target="_blank">
+                  <div class="tooltip"><i class="fas fa-rss"></i>
+                    <span class="tooltiptext">RSS feed voor bevestigde besmettingen in { feed.region }</span>
+                  </div>
+                </a>
+              </td>
+            ))}
+          </tr>
+        }
       </tbody>
     );
   }

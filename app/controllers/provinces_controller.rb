@@ -31,6 +31,7 @@ class ProvincesController < ApplicationController
         }
       }
       render component: 'Province', props: {
+        province: @province,
         municipalities: @province.municipalities,
         days: @days
       }

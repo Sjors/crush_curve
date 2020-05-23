@@ -15,7 +15,11 @@ class Province extends React.Component {
             ))}
           </tr>
         </thead>
-        <RegionDays days={ this.props.days } />
+        <RegionDays days={ this.props.days } feeds={ this.props.municipalities.map(municipality => ({
+          url: `/${ this.props.province.slug }/${ municipality.slug }.rss`,
+          region: municipality.name
+        }
+        )) } />
       </table>
     );
   }

@@ -1,3 +1,10 @@
+GIT
+  remote: https://github.com/Sjors/geoservices-ruby.git
+  revision: d1ffff489626b0f795db4f3d4833d2768f0624e0
+  branch: dev
+  specs:
+    geoservices (0.0.13)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -213,6 +220,7 @@ DEPENDENCIES
   bootsnap (>= 1.4.2)
   byebug
   capybara (>= 2.15)
+  geoservices!
   jbuilder (~> 2.7)
   listen (~> 3.2)
   puma (~> 4.1)

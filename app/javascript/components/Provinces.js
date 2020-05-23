@@ -11,7 +11,7 @@ class Provinces extends React.Component {
             <th />
             {this.props.provinces.map(province => (
               <th key={province.cbs_n}>
-                <a href={`/provinces/${ province.id }`}>{ province.name }</a>
+                <a href={`/${ province.slug }`}>{ province.name }</a>
               </th>
             ))}
           </tr>

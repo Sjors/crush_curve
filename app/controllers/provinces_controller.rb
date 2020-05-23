@@ -15,7 +15,7 @@ class ProvincesController < ApplicationController
   end
 
   def show
-    @province = Province.find(params[:id])
+    @province = Province.friendly.find(params[:id])
     render component: 'Province', props: {
       municipalities: @province.municipalities,
       days: Case.where("day >= ?", Date.new(2020,4,9)).distinct.order(day: :asc).pluck(:day).collect {|day|

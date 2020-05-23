@@ -12,8 +12,11 @@
 
 ActiveRecord::Schema.define(version: 2020_05_23_131636) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "cases", force: :cascade do |t|
-    t.integer "municipality_id", null: false
+    t.bigint "municipality_id", null: false
     t.integer "esri_id", null: false
     t.datetime "day", null: false
     t.integer "reports"
@@ -26,7 +29,7 @@ ActiveRecord::Schema.define(version: 2020_05_23_131636) do
   end
 
   create_table "municipalities", force: :cascade do |t|
-    t.integer "province_id", null: false
+    t.bigint "province_id", null: false
     t.string "cbs_id", null: false
     t.string "name", null: false
     t.integer "inhabitants", null: false

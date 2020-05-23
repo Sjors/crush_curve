@@ -10,7 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_23_095311) do
+ActiveRecord::Schema.define(version: 2020_05_23_100826) do
+
+  create_table "cases", force: :cascade do |t|
+    t.integer "municipality_id", null: false
+    t.integer "esri_id", null: false
+    t.datetime "day", null: false
+    t.integer "reports"
+    t.integer "hospitalizations"
+    t.integer "deaths"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["municipality_id"], name: "index_cases_on_municipality_id"
+  end
 
   create_table "municipalities", force: :cascade do |t|
     t.integer "province_id", null: false
@@ -29,5 +41,6 @@ ActiveRecord::Schema.define(version: 2020_05_23_095311) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  add_foreign_key "cases", "municipalities"
   add_foreign_key "municipalities", "provinces"
 end

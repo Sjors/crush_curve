@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  municipality: one
+  day: 2020-05-23 12:08:26
+  reports: 1
+  hospitalizations: 1
+  deaths: 1
+
+two:
+  municipality: two
+  day: 2020-05-23 12:08:26
+  reports: 1
+  hospitalizations: 1
+  deaths: 1

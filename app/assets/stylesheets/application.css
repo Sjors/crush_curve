@@ -20,6 +20,19 @@ table.winners {
   table-layout: fixed;
 }
 
+th.date {
+  width: 30pt;
+}
+
+td.date {
+  width: 30pt;
+}
+
+th.long {
+  transform: rotate(-70deg);
+  font-weight: normal;
+}
+
 td.bad {
   background-color: #cc0000
 }

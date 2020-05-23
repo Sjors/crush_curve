@@ -78,5 +78,10 @@ namespace :data do
     Province.all.collect{|p| [p.cases.where('date(day) = ?', Date.new(2020,4,9).to_date).sum(:reports), p]}.sort.reverse.each_with_index do |p,i|
       p[1].update position: i
     end
+
+    # Sort municipalities by severity on reference date
+    Municipality.all.collect{|p| [p.cases.where('date(day) = ?', Date.new(2020,4,9).to_date).sum(:reports), p]}.sort.reverse.each_with_index do |p,i|
+      p[1].update position: i
+    end
   end
 end

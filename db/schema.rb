@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_23_125243) do
+ActiveRecord::Schema.define(version: 2020_05_23_131636) do
 
   create_table "cases", force: :cascade do |t|
     t.integer "municipality_id", null: false
@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(version: 2020_05_23_125243) do
     t.integer "inhabitants", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "position"
     t.index ["province_id"], name: "index_municipalities_on_province_id"
   end
 

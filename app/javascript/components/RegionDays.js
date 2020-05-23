@@ -7,7 +7,7 @@ class RegionDays extends React.Component {
       <tbody>
         {this.props.days.map(day => (
           <tr key={ day.date }>
-            <td key={ day.date + "-title" }>
+            <td className="date" key={ day.date + "-title" }>
               { day.date }
             </td>
             {day.cases.map((case_count, index) => (

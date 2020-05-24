@@ -13,7 +13,7 @@ xml.rss :version => "2.0" do
           xml.description "Er zijn #{ c.new_reports } positieve testuitslagen in #{ @municipality.name } gemeld bij het RIVM in het etmaal voor #{ I18n.l(c.day, format: "%d %B") } 's ochtends. Er kan vertraging zitten in de rapportage."
           xml.pubDate c.created_at.to_s(:rfc822)
           xml.link province_url(@municipality.province)
-          xml.guid "crush-curve-case-#{ @municipality.cbs_id }-#{ c.day.to_i }"
+          xml.guid({:isPermaLink => "false"}, "crush-curve-case-#{ @municipality.cbs_id }-#{ c.day.to_i }")
         end
       end
     end

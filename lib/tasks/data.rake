@@ -1,17 +1,37 @@
 namespace :data do
   desc "Fetch the latest data"
-  task fetch: :environment do
+  task :fetch, [:force] => :environment do |t, args|
     @service = Geoservice::MapService.new(url: "https://services.arcgis.com/nSZVuSZjHpEZZbRo/arcgis/rest/services/Coronavirus_RIVM_vlakken_historie/FeatureServer")
-    @last_fetched = Case.maximum(:esri_id) || 0
+    @last_fetch_day = Case.maximum(:day) || CrushCurve::START_DATE + 1.day # Default: one day before first data point we care about
 
+    query_params = {
+      returnGeometry: false
+    }
+
+    # Check if there are fresh records:
+    query = @service.query(0, query_params.merge({
+      where: "Datum > DATE '#{ @last_fetch_day.strftime("%Y-%m-%d") }'",
+      returnCountOnly: true
+    }))
+
+    if query["error"]
+      throw query
+    end
+
+    if query["count"] == 0
+      puts "No new records"
+      exit 0 unless args.force == "true"
+    end
+
+    # If there are any new records, re-download the full dataset, because there
+    # may be updates. Skip records before CrushCurve::START_DATE, since those are not used
+    # to calculate any displayed values.
+    @last_fetched = 0
     loop do
       puts "Fetch new records after #{ @last_fetched }..."
-      query = @service.query(0, {returnGeometry: false, where: "ObjectId > #{ @last_fetched }"})
-
-      if query["features"].count == 0
-        puts "No new records"
-        break
-      end
+      query = @service.query(0, query_params.merge({
+        where: "ObjectId > #{ @last_fetched } AND Datum >= DATE '#{ CrushCurve::START_DATE.strftime("%Y-%m-%d") }'"
+      }))
 
       query["features"].each do |feature|
         attributes = feature["attributes"]
@@ -24,14 +44,21 @@ namespace :data do
         ).find_or_create_by(cbs_id: attributes["Gemeentecode"])
 
         # Record cases
-        Case.create(
-          esri_id: attributes["ObjectId"],
+        c = Case.find_or_create_by(
           municipality: municipality,
           day: Time.at(attributes["Datum"] / 1000),
-          reports: attributes["Meldingen"],
-          hospitalizations: attributes["Ziekenhuisopnamen"],
-          deaths: attributes["Overleden"]
         )
+        # Set or update info, mark for processing if new or updated
+        c.reports = attributes["Meldingen"]
+        c.hospitalizations = attributes["Ziekenhuisopnamen"]
+        c.deaths = attributes["Overleden"]
+        c.processed = c.processed && !c.changed?
+        begin
+          c.save!
+        rescue ActiveRecord::RecordInvalid => e
+          pp attributes
+          throw c.errors
+        end
 
         @last_fetched = attributes["ObjectId"]
       end
@@ -41,15 +68,28 @@ namespace :data do
   end
 
   desc "Process existing data"
-  task process: :environment do
+  task :process, [:force] => :environment do |t, args|
+    # Find first day with unprocessed cases. If existing entries were updated
+    # on any given day, we need to recalculate the daily difference for all
+    # subsequent days.
+    start = Case.where(processed: false).where("day >= ?", CrushCurve::START_DATE + 1.day).order(day: :asc).first
+    if start.nil?
+      puts "No new or modified cases"
+      if args.force == "true"
+        start = Case.where("day >= ?", CrushCurve::START_DATE + 1.day).order(day: :asc).first
+      else
+        exit 0
+      end
+    end
+
     # Calculate daily stats
     the_day = nil
-    Case.where("day >= ?", Date.new(2020,4,9)).order(day: :asc).each do |c|
+    Case.where("day >= ?", start.day.to_date).order(day: :asc).each do |c|
       puts "#{ c.day.to_date }..." if the_day != c.day
       the_day = c.day
       # If no reports today, assume 0 new cases
       if c.reports.nil?
-        c.update new_reports: 0
+        c.update new_reports: 0, processed: true
         next
       end
 
@@ -68,20 +108,22 @@ namespace :data do
             # Ignore corrections
             new_reports = 0
           end
-          c.update new_reports: new_reports
+          c.update new_reports: new_reports, processed: true
           break
         end
       end
     end
 
     # Sort provinces by severity on reference date
-    Province.all.collect{|p| [p.cases.where('date(day) = ?', Date.new(2020,4,9).to_date).sum(:reports), p]}.sort.reverse.each_with_index do |p,i|
+    Province.all.collect{|p| [p.cases.where('date(day) = ?', (CrushCurve::START_DATE + 1.day).to_date).sum(:reports), p]}.sort.reverse.each_with_index do |p,i|
       p[1].update position: i
     end
 
     # Sort municipalities by severity on reference date
-    Municipality.all.collect{|p| [p.cases.where('date(day) = ?', Date.new(2020,4,9).to_date).sum(:reports), p]}.sort.reverse.each_with_index do |p,i|
+    Municipality.all.collect{|p| [p.cases.where('date(day) = ?', (CrushCurve::START_DATE + 1.day).to_date).sum(:reports), p]}.sort.reverse.each_with_index do |p,i|
       p[1].update position: i
     end
+
+    Case.expire_cache
   end
 end

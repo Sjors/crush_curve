@@ -10,14 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_23_175714) do
+ActiveRecord::Schema.define(version: 2020_05_24_153302) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "cases", force: :cascade do |t|
     t.bigint "municipality_id", null: false
-    t.integer "esri_id", null: false
     t.datetime "day", null: false
     t.integer "reports"
     t.integer "hospitalizations"
@@ -25,6 +24,8 @@ ActiveRecord::Schema.define(version: 2020_05_23_175714) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "new_reports"
+    t.boolean "processed", default: false, null: false
+    t.index ["municipality_id", "day"], name: "index_cases_on_municipality_id_and_day", unique: true
     t.index ["municipality_id"], name: "index_cases_on_municipality_id"
   end
 
@@ -37,6 +38,7 @@ ActiveRecord::Schema.define(version: 2020_05_23_175714) do
     t.datetime "updated_at", precision: 6, null: false
     t.integer "position"
     t.string "slug"
+    t.index ["cbs_id"], name: "index_municipalities_on_cbs_id", unique: true
     t.index ["province_id"], name: "index_municipalities_on_province_id"
     t.index ["slug"], name: "index_municipalities_on_slug", unique: true
   end

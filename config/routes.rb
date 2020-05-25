@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  match '(*any)', to: redirect(subdomain: ''), via: :all, constraints: {subdomain: 'www'}
+
   resources :provinces, :path => '' do
     scope format: true, constraints: { format: /rss/ } do
         resources :municipalities, :path => ''

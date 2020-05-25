@@ -104,10 +104,6 @@ namespace :data do
         if !reference_day.reports.nil?
           # Assume new cases are recent (alternative: take average per day)
           new_reports = c.reports - reference_day.reports
-          if new_reports < 0
-            # Ignore corrections
-            new_reports = 0
-          end
           c.update new_reports: new_reports, processed: true
           break
         end

@@ -36,6 +36,14 @@ gem 'friendly_id', '~> 5.2.4'
 gem 'dalli'
 gem 'connection_pool'
 
+# Deployment
+gem 'capistrano', '~> 3.14'
+gem 'capistrano-rails', '~> 1.5'
+gem 'capistrano-passenger', '~> 0.2.0'
+gem 'capistrano-rbenv', '~> 2.1', '>= 2.1.6'
+gem 'ed25519'
+gem 'bcrypt_pbkdf'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'

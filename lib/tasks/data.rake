@@ -2,7 +2,7 @@ namespace :data do
   desc "Fetch the latest data"
   task :fetch, [:force] => :environment do |t, args|
     @service = Geoservice::MapService.new(url: "https://services.arcgis.com/nSZVuSZjHpEZZbRo/arcgis/rest/services/Coronavirus_RIVM_vlakken_historie/FeatureServer")
-    @last_fetch_day = Case.maximum(:day) || CrushCurve::START_DATE + 1.day # Default: one day before first data point we care about
+    @last_fetch_day = Case.maximum(:day) || Date.new(2020,3,2)
 
     query_params = {
       returnGeometry: false
@@ -24,13 +24,14 @@ namespace :data do
     end
 
     # If there are any new records, re-download the full dataset, because there
-    # may be updates. Skip records before CrushCurve::START_DATE, since those are not used
-    # to calculate any displayed values.
+    # may be updates. Skip records before CrushCurve::START_DATE, except the first
+    # time.
+    @last_fetch_day = CrushCurve::START_DATE if Case.count > 0
     @last_fetched = 0
     loop do
       puts "Fetch new records after #{ @last_fetched }..."
       query = @service.query(0, query_params.merge({
-        where: "ObjectId > #{ @last_fetched } AND Datum >= DATE '#{ CrushCurve::START_DATE.strftime("%Y-%m-%d") }'"
+        where: "ObjectId > #{ @last_fetched } AND Datum >= DATE '#{ @last_fetch_day.strftime("%Y-%m-%d") }'"
       }))
 
       query["features"].each do |feature|

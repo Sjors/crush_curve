@@ -117,4 +117,13 @@ Rails.application.configure do
   # config.active_record.database_selector = { delay: 2.seconds }
   # config.active_record.database_resolver = ActiveRecord::Middleware::DatabaseSelector::Resolver
   # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
+
+  Rails.application.config.middleware.use ExceptionNotification::Rack,
+     :email => {
+       :email_prefix => "[Crush Curve Exception] ",
+       :sender_address => ENV['EXCEPTION_FROM_EMAIL'],
+       :exception_recipients => ENV['BUGS_TO'].split(",")
+     },
+     :error_grouping => true,
+    :ignore_exceptions => ["Rack::Timeout::RequestTimeoutException"] + ExceptionNotifier.ignored_exceptions
 end

@@ -44,6 +44,9 @@ gem 'capistrano-rbenv', '~> 2.1', '>= 2.1.6'
 gem 'ed25519'
 gem 'bcrypt_pbkdf'
 
+# Email when something breaks
+ gem 'exception_notification'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'

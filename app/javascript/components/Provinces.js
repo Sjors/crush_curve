@@ -5,19 +5,21 @@ import RegionDays from "./RegionDays"
 class Provinces extends React.Component {
   render () {
     return (
-      <table className="winners">
-        <thead>
-          <tr>
-            <th />
-            {this.props.provinces.map(province => (
-              <th key={province.cbs_n}>
-                <a href={`/${ province.slug }`}>{ province.name }</a>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <RegionDays days={ this.props.days } />
-      </table>
+      <div className="table-responsive">
+        <table className="winners table table-bordered table-sm provinces">
+          <thead>
+            <tr>
+              <th scope="col" />
+              {this.props.provinces.map(province => (
+                <th key={province.cbs_n} scope="col">
+                  <a href={`/${ province.slug }`}>{ province.name }</a>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <RegionDays days={ this.props.days } />
+        </table>
+      </div>
     );
   }
 }

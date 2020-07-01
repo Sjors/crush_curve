@@ -15,7 +15,7 @@ class RegionDays extends React.Component {
               { day.date }
             </td>
             {day.cases.map((case_count, index) => (
-              <td key={index} className={ case_count > 100 ? "bad" : case_count > 30 ? "mediocre" : case_count > 10 ? "better" : case_count > 0 ? "almost" :  case_count == 0 ? "good" : "correction" }>
+              <td key={index} className={ (case_count > 100 ? "bad" : case_count > 30 ? "mediocre" : case_count > 10 ? "better" : case_count > 0 ? "almost" :  case_count == 0 ? "good" : "correction") }>
                 { case_count }
               </td>
             ))}
@@ -28,9 +28,9 @@ class RegionDays extends React.Component {
             {this.props.feeds.map(feed =>(
               <td key={ `feed_${ feed.slug }` } className="notifications">
                 <a href={ feed.url } target="_blank">
-                  <div className="tooltip"><FontAwesomeIcon icon={faRss} />
-                    <span className="tooltiptext">RSS feed voor bevestigde besmettingen in { feed.region }</span>
-                  </div>
+                  <span data-toggle="tooltip" title={`RSS feed voor bevestigde besmettingen in ${ feed.region }`}>
+                    <FontAwesomeIcon icon={faRss} />
+                  </span>
                 </a>
               </td>
             ))}

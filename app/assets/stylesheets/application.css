@@ -15,23 +15,12 @@
  *= require bootstrap
  */
 
+table.provinces {
+  table-layout: fixed; /* Equal width columns */
+}
+
 table.winners {
   text-align: center;
-  width: 100%;
-  table-layout: fixed;
-}
-
-th.date {
-  width: 30pt;
-}
-
-td.date {
-  width: 30pt;
-}
-
-th.long {
-  transform: rotate(-70deg);
-  font-weight: normal;
 }
 
 td.bad {
@@ -56,31 +45,4 @@ td.good {
 
 td.correction {
   background-color: #909090;
-}
-
-/* https://www.w3schools.com/css/css_tooltip.asp */
-.tooltip {
-  position: relative;
-  display: inline-block;
-  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
-}
-
-/* Tooltip text */
-.tooltip .tooltiptext {
-  visibility: hidden;
-  width: 120px;
-  background-color: black;
-  color: #fff;
-  text-align: center;
-  padding: 5px 0;
-  border-radius: 6px;
-
-  /* Position the tooltip text - see examples below! */
-  position: absolute;
-  z-index: 1;
-}
-
-/* Show the tooltip text when you mouse over the tooltip container */
-.tooltip:hover .tooltiptext {
-  visibility: visible;
 }

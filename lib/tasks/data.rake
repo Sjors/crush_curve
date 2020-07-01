@@ -14,6 +14,11 @@ namespace :data do
       returnCountOnly: true
     }))
 
+    if query.nil?
+      puts "No response"
+      exit 0
+    end
+
     if query["error"]
       throw query
     end

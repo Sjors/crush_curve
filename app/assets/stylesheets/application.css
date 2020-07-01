@@ -15,10 +15,6 @@
  *= require bootstrap
  */
 
-table.provinces {
-  table-layout: fixed; /* Equal width columns */
-}
-
 table.winners {
   text-align: center;
 }

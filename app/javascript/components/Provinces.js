@@ -18,6 +18,17 @@ class Provinces extends React.Component {
             </tr>
           </thead>
           <RegionDays days={ this.props.days } />
+          <tfoot>
+            <tr><td></td></tr>
+            <tr>
+              <td scope="col" />
+              {this.props.provinces.map(province => (
+                <td key={province.cbs_n} scope="col">
+                  <a href={`/${ province.slug }`}>{ province.name }</a>
+                </td>
+              ))}
+            </tr>
+          </tfoot>
         </table>
       </div>
     );

@@ -2,8 +2,6 @@ import React from "react"
 import PropTypes from "prop-types"
 
 import ReactDOM from 'react-dom'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faRss } from '@fortawesome/free-solid-svg-icons'
 
 class RegionDays extends React.Component {
   render () {
@@ -21,21 +19,6 @@ class RegionDays extends React.Component {
             ))}
           </tr>
         ))}
-        <tr key="feed_spacer" />
-        { this.props.feeds &&
-          <tr>
-            <td />
-            {this.props.feeds.map(feed =>(
-              <td key={ `feed_${ feed.slug }` } className="notifications">
-                <a href={ feed.url } target="_blank">
-                  <span data-toggle="tooltip" title={`RSS feed voor bevestigde besmettingen in ${ feed.region }`}>
-                    <FontAwesomeIcon icon={faRss} />
-                  </span>
-                </a>
-              </td>
-            ))}
-          </tr>
-        }
       </tbody>
     );
   }

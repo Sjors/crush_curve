@@ -1,4 +1,5 @@
 import React from "react"
+import Feed from "./Feed"
 import PropTypes from "prop-types"
 import RegionDays from "./RegionDays"
 
@@ -16,12 +17,16 @@ class Province extends React.Component {
               ))}
             </tr>
           </thead>
-          <RegionDays days={ this.props.days } feeds={ this.props.municipalities.map(municipality => ({
-            url: `/${ this.props.province.slug }/${ municipality.slug }.rss`,
-            region: municipality.name,
-            slug: municipality.slug
-          }
-          )) } />
+          <RegionDays days={ this.props.days } />
+          <tfoot>
+            <tr><td></td></tr>
+            <tr>
+              <td />
+              {this.props.municipalities.map(municipality => (
+                <Feed key={ municipality.slug } province={ this.props.province } municipality={ municipality } />
+              ))}
+            </tr>
+          </tfoot>
         </table>
       </div>
     );

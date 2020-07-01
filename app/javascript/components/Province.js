@@ -11,7 +11,9 @@ class Province extends React.Component {
         <table key={ this.props.province.slug } className="winners table table-bordered table-sm">
           <thead key="head">
             <tr key="header">
-              <th key="header_left" className="date" />
+              <th key="header_left" className="date">
+                <a href={ "/" }>Home</a>
+              </th>
               {this.props.municipalities.map(municipality => (
                 <th key={municipality.slug}>{ mun_count > 12 ? municipality.short_name : municipality.name }</th>
               ))}

@@ -34,9 +34,16 @@ gem 'geoservices', github: 'Sjors/geoservices-ruby', branch: "dev"
 
 gem 'friendly_id', '~> 5.2.4'
 
+# Safari notifications
+gem 'rpush'
+gem 'push_package'
+
 # Memcachier / memcached
 gem 'dalli'
 gem 'connection_pool'
+
+# Shim to load environment variables from .env into ENV
+gem 'dotenv-rails'
 
 # Deployment
 gem 'capistrano', '~> 3.14'

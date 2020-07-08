@@ -8,5 +8,11 @@ Rails.application.routes.draw do
   end
 
   root to: "provinces#index"
+
+  post 'push/:version/log', to: "safari#log"
+  post 'push/:version/pushPackages/web.nl.pletdecurve', to: "safari#package"
+  post 'push/:version/devices/:device_token/registrations/web.nl.pletdecurve', to: "safari#register"
+  delete 'push/:version/devices/:device_token/registrations/web.nl.pletdecurve', to: "safari#deregister"
+
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end

@@ -127,5 +127,9 @@ namespace :data do
     end
 
     Case.expire_cache
+
+    # Send notifications
+    Rpush.apns_feedback unless Rails.env.test?
+    Rpush.push unless Rails.env.test?
   end
 end

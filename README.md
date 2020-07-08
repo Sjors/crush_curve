@@ -48,3 +48,37 @@ eval "$(rbenv init -)"
 cd ~/crush_curve/current
 RAILS_ENV=production bundle exec rake data:fetch data:process
 ```
+
+To enable Safari push notifications, you need [register](https://developer.apple.com) a Website Push Identifier as well as a Website Push Certificate. Import the certificate into your keychain, export it as p12 and then convert to pem:
+
+```sh
+openssl pkcs12 -in crush.p12 -out crush.pem -nodes
+```
+
+Put the certificate password in `.rbenv-vars` on your server:
+
+```
+RAILS_MASTER_KEY=...
+DATABASE_URL=postgresql://crush:...@127.0.0.1/crush_curve
+EXCEPTION_FROM_EMAIL=bugs@...
+BUGS_TO=you@example.com
+CERT_PWD=...
+```
+
+Create a directory `shared/certs` and upload crush.pem and crush.p12 to it. Also download Apple's intermediate cert:
+
+```
+wget https://developer.apple.com/certificationauthority/AppleWWDRCA.cer
+```
+
+Finally run a rake task to prepare your application:
+
+```
+RAILS_ENV=production bundle exec rake safari:register_app
+```
+
+Afaik it's not possible to test push notifications on your local development machine.
+But you can check for problems with your certificate in the Rails Console, by trying
+`SafariSubscription.generate_package(SecureRandom.hex)`.
+
+On production you can monitor your log for requests to `/push/v` for errors reported by Apple's server.

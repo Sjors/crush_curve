@@ -17,7 +17,7 @@ class ProvincesController < ApplicationController
       province: @province,
       municipalities: @province.municipalities,
       days: @days
-    }
+    }, prerender: false
   end
 
   private

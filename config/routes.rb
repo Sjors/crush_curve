@@ -14,5 +14,8 @@ Rails.application.routes.draw do
   post 'push/:version/devices/:device_token/registrations/web.nl.pletdecurve', to: "safari#register"
   delete 'push/:version/devices/:device_token/registrations/web.nl.pletdecurve', to: "safari#deregister"
 
+  post 'subscriptions', to: "subscriptions#add"
+  delete 'subscriptions/:municipality_id', to: "subscriptions#remove"
+
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 end

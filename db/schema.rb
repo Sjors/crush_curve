@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_08_112722) do
+ActiveRecord::Schema.define(version: 2020_07_09_093354) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -130,6 +130,17 @@ ActiveRecord::Schema.define(version: 2020_07_08_112722) do
     t.index ["auth_token"], name: "index_safari_subscriptions_on_auth_token", unique: true
   end
 
+  create_table "subscriptions", force: :cascade do |t|
+    t.bigint "municipality_id", null: false
+    t.bigint "safari_subscription_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["municipality_id"], name: "index_subscriptions_on_municipality_id"
+    t.index ["safari_subscription_id"], name: "index_subscriptions_on_safari_subscription_id"
+  end
+
   add_foreign_key "cases", "municipalities"
   add_foreign_key "municipalities", "provinces"
+  add_foreign_key "subscriptions", "municipalities"
+  add_foreign_key "subscriptions", "safari_subscriptions"
 end

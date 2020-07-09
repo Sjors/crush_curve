@@ -1,4 +1,6 @@
 class SafariSubscription < ApplicationRecord
+  has_many :subscriptions, :dependent => :destroy
+  
   def self.generate_package!(auth_token)
     path = "tmp/pushPackage-#{ auth_token }.zip"
     website_params = {

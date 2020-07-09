@@ -56,6 +56,9 @@ gem 'bcrypt_pbkdf'
 # Email when something breaks
  gem 'exception_notification'
 
+# CORS headers
+gem 'rack-cors', require: 'rack/cors'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'

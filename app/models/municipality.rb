@@ -4,6 +4,7 @@ class Municipality < ApplicationRecord
 
   belongs_to :province
   has_many :cases
+  has_many :subscriptions, :dependent => :destroy
 
   default_scope { order(position: :asc) }
 

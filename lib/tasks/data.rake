@@ -133,22 +133,30 @@ namespace :data do
   task :notify, [:force] => :environment do |t, args|
     Rpush.apns_feedback
 
-    app = Rpush::Apns::App.find_by_name("crush_curve")
+    # Good news:
+    Case.where(notified: false, new_reports: 0).where("date(day) = ?", Time.now.to_date).each do |c|
+      c.update notified: true
+      # Only notify about zero cases if there were more than zero cases yesterday:
+      if c.yesterday.new_reports > 0
+        c.municipality.subscriptions.each do |s|
+          s.notify(
+            "Geen corona in #{ c.municipality.name }",
+            "Er zijn geen positieve testuitslagen in #{ c.municipality.name } gemeld bij het RIVM afgelopen etmaal. U krijgt bericht als dat verandert.",
+            [c.municipality.province.slug]
+          )
+        end
+      end
+    end
 
+    # Bad news:
     Case.where(notified: false).where("date(day) = ? AND new_reports > 0", Time.now.to_date).each do |c|
       c.update notified: true
       c.municipality.subscriptions.each do |s|
-        if s.safari_subscription
-          n = Rpush::Apns::Notification.create!(
-            app: app,
-            device_token: s.safari_subscription.device_token,
-            alert: {
-              title: "Corona in #{ c.municipality.name }",
-              body: "Er zijn #{ c.new_reports } positieve testuitslagen in #{ c.municipality.name } gemeld bij het RIVM afgelopen etmaal"
-            },
-            url_args: [c.municipality.province.slug]
-          )
-        end
+        s.notify(
+          "Corona in #{ c.municipality.name }",
+          "Er zijn #{ c.new_reports } positieve testuitslagen in #{ c.municipality.name } gemeld bij het RIVM afgelopen etmaal",
+          [c.municipality.province.slug]
+        )
       end
     end
 

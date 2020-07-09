@@ -1,6 +1,20 @@
 class SafariSubscription < ApplicationRecord
   has_many :subscriptions, :dependent => :destroy
-  
+
+  def notify(title, body, url_args)
+    app = Rpush::Apns::App.find_by_name("crush_curve")
+
+    Rpush::Apns::Notification.create!(
+      app: app,
+      device_token: device_token,
+      alert: {
+        title: title,
+        body: body
+      },
+      url_args: url_args
+    )
+  end
+
   def self.generate_package!(auth_token)
     path = "tmp/pushPackage-#{ auth_token }.zip"
     website_params = {

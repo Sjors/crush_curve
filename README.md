@@ -46,7 +46,7 @@ MAILTO=sjors@sprovoost.nl
 PATH=$PATH:/usr/local/bin:/home/crush/.rbenv/bin:/home/crush/.rbenv/shims
 eval "$(rbenv init -)"
 cd ~/crush_curve/current
-RAILS_ENV=production bundle exec rake data:fetch data:process
+RAILS_ENV=production bundle exec rake data:fetch data:process data:notify
 ```
 
 To enable Safari push notifications, you need [register](https://developer.apple.com) a Website Push Identifier as well as a Website Push Certificate. Import the certificate into your keychain, export it as p12 and then convert to pem:

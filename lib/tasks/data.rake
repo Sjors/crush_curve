@@ -95,19 +95,19 @@ namespace :data do
       response = http.request_get(@path)
       puts "Parsing CSV..."
       Time.zone = "Europe/Amsterdam"
-      @csv = CSV.parse(response.body, headers: true, encoding: Encoding::UTF_8, col_sep: "\;", converters: [->(v) { Time.strptime(v, '%Y-%m-%d %I:%M:%S') rescue v }, ->(v) { Time.strptime(v, '%Y-%m-%d') rescue v }, :numeric])
+      @csv = CSV.parse(response.body, headers: true, encoding: Encoding::UTF_8, col_sep: "\;", converters: [->(v) { Time.strptime(v, '%Y-%m-%d %I:%M:%S') rescue v }, ->(v) { Date.strptime(v, '%Y-%m-%d') rescue v }, :numeric])
     end
 
     puts "Processing records..."
-    @csv.group_by { |r| r["Province"] }.transform_values!{ |p|
-      p.group_by { |p| p["Date_statistics"] }
-    }.each do |province_name, days|
+    ProvinceTally.destroy_all
+    @csv.group_by { |r| r["Province"] }.each do |province_name, days|
       province = Province.find_by!(name: province_name)
-      days.each do |date, cases|
-        t = province.province_tallies.create_with(new_cases: cases.count).find_or_create_by(day: date)
-        t.update new_cases: cases.count
+      (CrushCurve::FIRST_PATIENT_DATE..Date.today).each do |d|
+        tally = days.select{|day| day["Date_statistics"] == d }.count
+        ProvinceTally.create!(province: province, day: d, new_cases: tally)
       end
     end
+    ProvinceTally.expire_cache
   end
 
   desc "Process existing data"

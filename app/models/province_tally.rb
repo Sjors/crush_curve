@@ -2,13 +2,13 @@ class ProvinceTally < ApplicationRecord
   belongs_to :province
 
   def self.daily
-    where("day >= ?", CrushCurve::FIRST_PATIENT_DATE).distinct.order("date(day) asc").pluck("date(day)").collect {|day|
+    where("day >= ?", CrushCurve::FIRST_PATIENT_DATE).distinct.order("day asc").pluck("day").collect {|day|
       {
-        date: day.to_date.strftime("%d/%m"),
+        date: day.strftime("%d/%m"),
         cases: Province.all.collect{|province|
-          province.province_tallies.where("date(day) = ?", day).first.try(:new_cases) || 0
+          province.province_tallies.where("day = ?", day).first.try(:new_cases) || 0
         },
-        recent: 3.days.ago < day.to_date
+        recent: 3.days.ago < day
       }
     }
   end

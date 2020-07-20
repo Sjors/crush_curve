@@ -1,75 +1,67 @@
+require 'net/http'
+require 'csv'
+
 namespace :data do
-  desc "Fetch the latest data"
+  desc "Fetch municipal level case data from RIVM"
   task :fetch, [:force] => :environment do |t, args|
-    @service = Geoservice::MapService.new(url: "https://services.arcgis.com/nSZVuSZjHpEZZbRo/arcgis/rest/services/Coronavirus_RIVM_vlakken_historie/FeatureServer")
+    @domain = "data.rivm.nl"
+    @path = "/covid-19/COVID-19_aantallen_gemeente_cumulatief.csv"
+
     @last_fetch_day = Case.maximum(:day) || Date.new(2020,3,2)
-
-    query_params = {
-      returnGeometry: false
-    }
-
-    # Check if there are fresh records:
-    query = @service.query(0, query_params.merge({
-      where: "Datum > DATE '#{ @last_fetch_day.strftime("%Y-%m-%d") }'",
-      returnCountOnly: true
-    }))
-
-    if query.nil?
-      puts "No response"
+    if @last_fetch_day == Date.today
+      puts "Already fetched todays records"
       exit 0
     end
 
-    if query["error"]
-      throw query
+    # Check if there are fresh records:
+    Net::HTTP.start(@domain, :use_ssl => true) do |http|
+      # Fetch header and check Last-Modified
+      response = http.request_head(@path)
+      @last_modified = Time.parse(response["Last-Modified"])
     end
 
-    if query["count"] == 0
-      puts "No new records"
+    if @last_modified.to_date < Date.today
+      puts "Todays records not yet available"
       exit 0 unless args.force == "true"
+      puts "Processing anyway..."
     end
 
-    # If there are any new records, re-download the full dataset, because there
-    # may be updates. Skip records before CrushCurve::START_DATE, except the first
-    # time.
-    @last_fetch_day = CrushCurve::START_DATE if Case.count > 0
-    @last_fetched = 0
-    loop do
-      puts "Fetch new records after #{ @last_fetched }..."
-      query = @service.query(0, query_params.merge({
-        where: "ObjectId > #{ @last_fetched } AND Datum >= DATE '#{ @last_fetch_day.strftime("%Y-%m-%d") }'"
-      }))
+    # Fetch CSV
+    Net::HTTP.start(@domain, :use_ssl => true) do |http|
+      puts "Downloading CSV..."
+      response = http.request_get(@path)
+      puts "Parsing CSV..."
+      Time.zone = "Europe/Amsterdam"
+      @csv = CSV.parse(response.body, headers: true, encoding: Encoding::UTF_8, col_sep: "\;", converters: [->(v) { Time.strptime(v, '%Y-%m-%d %I:%M:%S') rescue v }, :numeric])
+    end
 
-      query["features"].each do |feature|
-        attributes = feature["attributes"]
+    puts "Processing records..."
+    @csv.each do |row|
+      # Ignore province rows at the end
+      next if row["Municipality_code"].nil?
 
-        # Check if we already have this municipality
-        municipality = Municipality.create_with(
-          province: Province.find_by(cbs_n: attributes["Provincienummer"]),
-          name: attributes["Gemeentenaam"],
-          inhabitants: attributes["Bevolkingsaantal"],
-        ).find_or_create_by(cbs_id: attributes["Gemeentecode"])
+      # Check if we already have this municipality
+      municipality = Municipality.create_with(
+        province: Province.find_by(name: row["Province"]),
+        name: row["Municipality_name"]
+      ).find_or_create_by(cbs_id: row["Municipality_code"])
 
-        # Record cases
-        c = Case.find_or_create_by(
-          municipality: municipality,
-          day: Time.at(attributes["Datum"] / 1000),
-        )
-        # Set or update info, mark for processing if new or updated
-        c.reports = attributes["Meldingen"]
-        c.hospitalizations = attributes["Ziekenhuisopnamen"]
-        c.deaths = attributes["Overleden"]
-        c.processed = c.processed && !c.changed?
-        begin
-          c.save!
-        rescue ActiveRecord::RecordInvalid => e
-          pp attributes
-          throw c.errors
-        end
-
-        @last_fetched = attributes["ObjectId"]
+      # Record cases
+      c = Case.find_or_create_by(
+        municipality: municipality,
+        day: row["Date_of_report"].to_date.to_time(:utc) # ignore RIVM reporting time
+      )
+      # Set or update info, mark for processing if new or updated
+      c.reports = row["Total_reported"]
+      c.hospitalizations = row["Hospital_admission"]
+      c.deaths = row["Deceased"]
+      c.processed = c.processed && !c.changed?
+      begin
+        c.save!
+      rescue ActiveRecord::RecordInvalid => e
+        pp row
+        throw c.errors
       end
-
-      break if !query["exceededTransferLimit"]
     end
   end
 
@@ -116,13 +108,13 @@ namespace :data do
       end
     end
 
-    # Sort provinces by severity on reference date
-    Province.all.collect{|p| [p.cases.where('date(day) = ?', (CrushCurve::START_DATE + 1.day).to_date).sum(:reports), p]}.sort.reverse.each_with_index do |p,i|
+    # Sort provinces by severity on peak date
+    Province.all.collect{|p| [p.cases.where('date(day) = ?', (CrushCurve::PEAK_DATE + 1.day).to_date).sum(:reports), p]}.sort.reverse.each_with_index do |p,i|
       p[1].update position: i
     end
 
     # Sort municipalities by severity on reference date
-    Municipality.all.collect{|p| [p.cases.where('date(day) = ?', (CrushCurve::START_DATE + 1.day).to_date).sum(:reports), p]}.sort.reverse.each_with_index do |p,i|
+    Municipality.all.collect{|p| [p.cases.where('date(day) = ?', (CrushCurve::PEAK_DATE + 1.day).to_date).sum(:reports), p]}.sort.reverse.each_with_index do |p,i|
       p[1].update position: i
     end
 

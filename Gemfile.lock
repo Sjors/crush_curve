@@ -1,10 +1,3 @@
-GIT
-  remote: https://github.com/Sjors/geoservices-ruby.git
-  revision: d1ffff489626b0f795db4f3d4833d2768f0624e0
-  branch: dev
-  specs:
-    geoservices (0.0.13)
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -290,7 +283,6 @@ DEPENDENCIES
   ed25519
   exception_notification
   friendly_id (~> 5.2.4)
-  geoservices!
   jbuilder (~> 2.7)
   listen (~> 3.2)
   pg

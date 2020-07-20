@@ -3,8 +3,8 @@
 ![site preview](/preview.png)
 
 Each cell shows the number of positive test results that day. Green is winning.
-Visualization inspired by Yaneer Bar-Yam from [endcoronavirus.org](https://www.endcoronavirus.org). Data source [RIVM](https://www.databronnencovid19.nl).
-The data is retrieved from [ESRI NL COVID-19 Hub](http://esri.nl/corona") using
+Visualization inspired by Yaneer Bar-Yam from [endcoronavirus.org](https://www.endcoronavirus.org).
+The data is retrieved from [RIVM](https://data.rivm.nl/covid-19/) using
 a cron job.
 
 ## Develop

@@ -6,7 +6,7 @@ class Case < ApplicationRecord
   end
 
   def self.daily_per_province
-    where("day >= ?", CrushCurve::START_DATE + 1.day).distinct.order(day: :asc).pluck(:day).collect {|day|
+    where("day >= ?", CrushCurve::START_DATE + 1.day).distinct.order("date(day) asc").pluck("date(day)").collect {|day|
       {
         date: day.to_date.strftime("%d/%m"),
         cases: Province.all.collect{|province|
@@ -17,7 +17,7 @@ class Case < ApplicationRecord
   end
 
   def self.daily_per_municipality(province)
-    Case.where("day >= ?", CrushCurve::START_DATE + 1.day).distinct.order(day: :asc).pluck(:day).collect {|day|
+    Case.where("day >= ?", CrushCurve::START_DATE + 1.day).distinct.order("date(day) asc").pluck("date(day)").collect {|day|
       {
         date: day.to_date.strftime("%d/%m"),
         cases: province.municipalities.collect{|municipality|

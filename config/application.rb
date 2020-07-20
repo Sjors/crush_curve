@@ -7,7 +7,9 @@ require 'rails/all'
 Bundler.require(*Rails.groups)
 
 module CrushCurve
-  START_DATE = Date.new(2020,4,8)
+  START_DATE = Date.new(2020,3,13)
+  # Approximate, consistent with earlier version of site
+  PEAK_DATE = Date.new(2020,4,8)
 
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.

@@ -3,7 +3,7 @@ class ProvincesController < ApplicationController
 
   def index
     @provinces = Province.all
-    @days = Rails.cache.fetch("Case.daily_per_province") { Case.daily_per_province }
+    @days = Rails.cache.fetch("ProvinceTally.daily") { ProvinceTally.daily }
     render component: 'Provinces', props: {
       provinces: @provinces,
       days: @days

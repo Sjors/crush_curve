@@ -65,6 +65,51 @@ namespace :data do
     end
   end
 
+  desc "Fetch province level case data from RIVM"
+  task :fetch_provinces, [:force] => :environment do |t, args|
+    @domain = "data.rivm.nl"
+    @path = "/covid-19/COVID-19_casus_landelijk.csv"
+
+    @last_fetch_day = ProvinceTally.maximum(:updated_at) || Date.new(2020,3,2)
+    if @last_fetch_day.to_date == Date.today
+      puts "Already updated records today"
+      exit 0 unless args.force == "true"
+    end
+
+    # Check if there are fresh records:
+    Net::HTTP.start(@domain, :use_ssl => true) do |http|
+      # Fetch header and check Last-Modified
+      response = http.request_head(@path)
+      @last_modified = Time.parse(response["Last-Modified"])
+    end
+
+    if @last_modified.to_date < Date.today
+      puts "Todays records not yet available"
+      exit 0 unless args.force == "true"
+      puts "Processing anyway..."
+    end
+
+    # Fetch CSV
+    Net::HTTP.start(@domain, :use_ssl => true) do |http|
+      puts "Downloading CSV..."
+      response = http.request_get(@path)
+      puts "Parsing CSV..."
+      Time.zone = "Europe/Amsterdam"
+      @csv = CSV.parse(response.body, headers: true, encoding: Encoding::UTF_8, col_sep: "\;", converters: [->(v) { Time.strptime(v, '%Y-%m-%d %I:%M:%S') rescue v }, ->(v) { Time.strptime(v, '%Y-%m-%d') rescue v }, :numeric])
+    end
+
+    puts "Processing records..."
+    @csv.group_by { |r| r["Province"] }.transform_values!{ |p|
+      p.group_by { |p| p["Date_statistics"] }
+    }.each do |province_name, days|
+      province = Province.find_by!(name: province_name)
+      days.each do |date, cases|
+        t = province.province_tallies.create_with(new_cases: cases.count).find_or_create_by(day: date)
+        t.update new_cases: cases.count
+      end
+    end
+  end
+
   desc "Process existing data"
   task :process, [:force] => :environment do |t, args|
     # Find first day with unprocessed cases. If existing entries were updated
@@ -119,6 +164,7 @@ namespace :data do
     end
 
     Case.expire_cache
+    ProvinceTally.expire_cache
   end
 
   desc "Send notifications"

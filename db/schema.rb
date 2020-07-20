@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_20_104357) do
+ActiveRecord::Schema.define(version: 2020_07_20_140810) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -41,6 +41,15 @@ ActiveRecord::Schema.define(version: 2020_07_20_104357) do
     t.index ["cbs_id"], name: "index_municipalities_on_cbs_id", unique: true
     t.index ["province_id"], name: "index_municipalities_on_province_id"
     t.index ["slug"], name: "index_municipalities_on_slug", unique: true
+  end
+
+  create_table "province_tallies", force: :cascade do |t|
+    t.datetime "day", null: false
+    t.bigint "province_id", null: false
+    t.integer "new_cases", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["province_id"], name: "index_province_tallies_on_province_id"
   end
 
   create_table "provinces", force: :cascade do |t|
@@ -141,6 +150,7 @@ ActiveRecord::Schema.define(version: 2020_07_20_104357) do
 
   add_foreign_key "cases", "municipalities"
   add_foreign_key "municipalities", "provinces"
+  add_foreign_key "province_tallies", "provinces"
   add_foreign_key "subscriptions", "municipalities"
   add_foreign_key "subscriptions", "safari_subscriptions"
 end

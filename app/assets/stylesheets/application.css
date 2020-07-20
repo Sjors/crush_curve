@@ -42,3 +42,7 @@ td.good {
 td.correction {
   background-color: #909090;
 }
+
+td.recent {
+  background-color: #D3D3D3;
+}

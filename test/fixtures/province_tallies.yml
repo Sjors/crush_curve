@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  date: 2020-07-20 16:08:10
+  province: one
+  new_cases: 1
+
+two:
+  date: 2020-07-20 16:08:10
+  province: two
+  new_cases: 1

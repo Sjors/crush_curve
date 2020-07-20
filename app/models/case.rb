@@ -28,7 +28,6 @@ class Case < ApplicationRecord
   end
 
   def self.expire_cache
-    Rails.cache.delete("Case.daily_per_province")
     Province.all.each do |province|
       Rails.cache.delete("Case.daily_per_municipality(#{province.id})")
     end

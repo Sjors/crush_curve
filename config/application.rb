@@ -10,6 +10,7 @@ module CrushCurve
   START_DATE = Date.new(2020,3,13)
   # Approximate, consistent with earlier version of site
   PEAK_DATE = Date.new(2020,4,8)
+  FIRST_PATIENT_DATE = Date.new(2020,2,1)
 
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.

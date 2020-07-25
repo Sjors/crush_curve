@@ -9,11 +9,18 @@ a cron job.
 
 ## Develop
 
+To prepare the database:
+
+```sh
+rake db:seed
+```
+
 To fetch and process data:
 
 ```sh
 rake data:fetch
 rake data:process
+rake data:fetch_provinces
 ```
 
 Run the server:

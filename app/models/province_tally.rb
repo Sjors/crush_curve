@@ -8,7 +8,7 @@ class ProvinceTally < ApplicationRecord
       {
         date: day.strftime("%d/%m"),
         cases: Province.all.collect{|province|
-          province.province_tallies.where("day = ?", day).first.try(:new_cases) || 0
+          province.province_tallies.where(report_day: report_day, day: day).first.try(:new_cases) || 0
         },
         recent: report_day - 3.days < day
       }

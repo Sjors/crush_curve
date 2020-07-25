@@ -4,6 +4,8 @@ import PropTypes from "prop-types"
 import ReactDOM from 'react-dom'
 
 class RegionDays extends React.Component {
+  transpose = m => m[0].map((x,i) => m.map(x => x[i]))
+
   render () {
     return (
       <tbody>
@@ -12,9 +14,13 @@ class RegionDays extends React.Component {
             <td className="date" key={ day.date + "-title" }>
               { day.date }
             </td>
-            {day.cases.map((case_count, index) => (
-              <td key={index} className={ (day.recent ? "recent" : case_count > 100 ? "bad" : case_count > 30 ? "mediocre" : case_count > 10 ? "better" : case_count > 0 ? "almost" :  case_count == 0 ? "good" : "correction") }>
-                { case_count }
+            {this.transpose([day.cases,day.cases_24]).map((case_count, index) => (
+              <td key={index} className={ (day.recent ? "recent" : case_count[0] > 100 ? "bad" : case_count[0] > 30 ? "mediocre" : case_count[0] > 10 ? "better" : case_count[0] > 0 ? "almost" :  case_count[0] == 0 ? "good" : "correction") }>
+                { case_count[0] }
+                {
+                  case_count[1] > 0 &&
+                  ` (${case_count[1]})`
+                }
               </td>
             ))}
           </tr>

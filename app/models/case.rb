@@ -22,6 +22,9 @@ class Case < ApplicationRecord
         date: day.to_date.strftime("%d/%m"),
         cases: province.municipalities.collect{|municipality|
           municipality.cases.where(day: day).sum(:new_reports)
+        },
+        cases_24: province.municipalities.collect{|municipality|
+          0
         }
       }
     }

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_20_171951) do
+ActiveRecord::Schema.define(version: 2020_07_25_064044) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -49,6 +49,7 @@ ActiveRecord::Schema.define(version: 2020_07_20_171951) do
     t.integer "new_cases", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.date "report_day"
     t.index ["province_id"], name: "index_province_tallies_on_province_id"
   end
 

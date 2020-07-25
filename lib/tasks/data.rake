@@ -70,7 +70,7 @@ namespace :data do
     @domain = "data.rivm.nl"
     @path = "/covid-19/COVID-19_casus_landelijk.csv"
 
-    @last_fetch_day = ProvinceTally.maximum(:updated_at) || Date.new(2020,3,2)
+    @last_fetch_day = ProvinceTally.maximum(:report_day) || Date.yesterday
     if @last_fetch_day.to_date == Date.today
       puts "Already updated records today"
       exit 0 unless args.force == "true"
@@ -98,13 +98,14 @@ namespace :data do
       @csv = CSV.parse(response.body, headers: true, encoding: Encoding::UTF_8, col_sep: "\;", converters: [->(v) { Time.strptime(v, '%Y-%m-%d %I:%M:%S') rescue v }, ->(v) { Date.strptime(v, '%Y-%m-%d') rescue v }, :numeric])
     end
 
-    puts "Processing records..."
-    ProvinceTally.destroy_all
+    puts "Processing records for #{ @last_modified.to_date }..."
+    @report_day = @last_modified.to_date
+    ProvinceTally.where(report_day: @report_day ).destroy_all
     @csv.group_by { |r| r["Province"] }.each do |province_name, days|
       province = Province.find_by!(name: province_name)
-      (CrushCurve::FIRST_PATIENT_DATE..Date.today).each do |d|
+      (CrushCurve::FIRST_PATIENT_DATE..@report_day).each do |d|
         tally = days.select{|day| day["Date_statistics"] == d }.count
-        ProvinceTally.create!(province: province, day: d, new_cases: tally)
+        ProvinceTally.create!(report_day: @report_day, province: province, day: d, new_cases: tally)
       end
     end
     ProvinceTally.expire_cache

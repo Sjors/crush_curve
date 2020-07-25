@@ -14,7 +14,7 @@ class ProvinceTally < ApplicationRecord
           (province.province_tallies.where(report_day: report_day, day: day).where("day < report_day").first.try(:new_cases) || 0) -
           (province.province_tallies.where(report_day: report_day - 1.day, day: day).where("day < report_day").first.try(:new_cases) || 0)
         },
-        recent: report_day - 3.days < day
+        recent: report_day - 5.days < day
       }
     }
   end

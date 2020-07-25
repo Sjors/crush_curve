@@ -25,6 +25,8 @@
       <p>
         Data source <a href="https://data.rivm.nl/covid-19/">RIVM</a>.
         The provinces page data is calculated using a list of individual case reports (<tt>COVID-19_casus_landelijk.csv</tt>).
+        It uses the day of disease onset if known, otherwise day of the first positive lab result and if that's unknown
+        and otherwise the day GGD was notified. Source data is explained <a href="https://data.overheid.nl/dataset/11634-covid-19-karakteristieken-per-casus-landelijk">here</a>.
         Recent days are light grey, because these case reports tend to lag by a few days.
         The municipalities page is calculated using the list aggregate totals (<tt>COVID-19_aantallen_gemeente_cumulatief.csv</tt>).
         Negative numbers are corrections. It's less accurate, but more fine grained.

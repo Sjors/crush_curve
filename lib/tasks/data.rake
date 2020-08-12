@@ -155,7 +155,7 @@ namespace :data do
     end
 
     # Sort provinces by at (early) peak of second wave
-    ProvinceTally.where('day = ?', CrushCurve::REFERENCE_DATE).order(new_cases: :desc).each_with_index do |t, i|
+    ProvinceTally.where(report_day: Date.today).where('day = ?', CrushCurve::REFERENCE_DATE).order(new_cases: :desc).each_with_index do |t, i|
       t.province.update position: i
     end
 

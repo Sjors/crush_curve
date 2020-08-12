@@ -43,6 +43,8 @@ gem 'connection_pool'
 # Shim to load environment variables from .env into ENV
 gem 'dotenv-rails'
 
+gem 'secure_headers'
+
 # Deployment
 gem 'capistrano', '~> 3.14'
 gem 'capistrano-rails', '~> 1.5'

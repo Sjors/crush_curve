@@ -8,8 +8,8 @@ Bundler.require(*Rails.groups)
 
 module CrushCurve
   START_DATE = Date.new(2020,3,13)
-  # Approximate, consistent with earlier version of site
-  PEAK_DATE = Date.new(2020,4,8)
+  # Second wave
+  REFERENCE_DATE = Date.new(2020,8,5)
   FIRST_PATIENT_DATE = Date.new(2020,2,1)
 
   class Application < Rails::Application

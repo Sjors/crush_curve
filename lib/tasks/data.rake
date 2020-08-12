@@ -155,12 +155,12 @@ namespace :data do
     end
 
     # Sort provinces by severity on peak date
-    Province.all.collect{|p| [p.cases.where('date(day) = ?', (CrushCurve::PEAK_DATE + 1.day).to_date).sum(:reports), p]}.sort.reverse.each_with_index do |p,i|
+    Province.all.collect{|p| [p.cases.where('date(day) = ?', (CrushCurve::REFERENCE_DATE + 1.day).to_date).sum(:reports), p]}.sort.reverse.each_with_index do |p,i|
       p[1].update position: i
     end
 
     # Sort municipalities by severity on reference date
-    Municipality.all.collect{|p| [p.cases.where('date(day) = ?', (CrushCurve::PEAK_DATE + 1.day).to_date).sum(:reports), p]}.sort.reverse.each_with_index do |p,i|
+    Municipality.all.collect{|p| [p.cases.where('date(day) = ?', (CrushCurve::REFERENCE_DATE + 1.day).to_date).sum(:reports), p]}.sort.reverse.each_with_index do |p,i|
       p[1].update position: i
     end
 

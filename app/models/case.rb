@@ -16,8 +16,15 @@ class Case < ApplicationRecord
     }
   end
 
-  def self.daily_per_municipality(province)
-    Case.where("day >= ?", CrushCurve::START_DATE + 1.day).distinct.order("date(day) asc").pluck("date(day)").collect {|day|
+  def self.daily_per_municipality(wave, province)
+    range = case wave
+      when 1
+        where("day >= ?", CrushCurve::FIRST_PATIENT_DATE).where("day < ?", CrushCurve::WAVE_2_START_DATE)
+      when 2
+        where("day >= ?", CrushCurve::WAVE_2_START_DATE)
+      end
+
+    range.where("day >= ?", CrushCurve::START_DATE + 1.day).distinct.order("date(day) asc").pluck("date(day)").collect {|day|
       {
         date: day.to_date.strftime("%d/%m"),
         cases: province.municipalities.collect{|municipality|

@@ -11,6 +11,7 @@ module CrushCurve
   # Second wave
   REFERENCE_DATE = Date.new(2020,8,5)
   FIRST_PATIENT_DATE = Date.new(2020,2,1)
+  WAVE_2_START_DATE = Date.new(2020,7,1)
 
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.

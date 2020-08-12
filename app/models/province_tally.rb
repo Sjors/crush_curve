@@ -2,9 +2,16 @@ class ProvinceTally < ApplicationRecord
   belongs_to :province
 
   # If cached, it must be expired when new records are added
-  def self.daily
+  def self.daily(wave)
+
     report_day = ProvinceTally.maximum(:report_day)
-    where(report_day: report_day).where("day >= ?", CrushCurve::FIRST_PATIENT_DATE).distinct.order("day asc").pluck("day").collect {|day|
+    range = case wave
+      when 1
+        where("day >= ?", CrushCurve::FIRST_PATIENT_DATE).where("day < ?", CrushCurve::WAVE_2_START_DATE)
+      when 2
+        where("day >= ?", CrushCurve::WAVE_2_START_DATE)
+      end
+    range.where(report_day: report_day).distinct.order("day asc").pluck("day").collect {|day|
       {
         date: day.strftime("%d/%m"),
         cases: Province.all.collect{|province|
@@ -20,6 +27,7 @@ class ProvinceTally < ApplicationRecord
   end
 
   def self.expire_cache
-    Rails.cache.delete("ProvinceTally.daily")
+    Rails.cache.delete("ProvinceTally.daily(1)")
+    Rails.cache.delete("ProvinceTally.daily(2)")
   end
 end

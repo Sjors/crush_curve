@@ -154,9 +154,9 @@ namespace :data do
       end
     end
 
-    # Sort provinces by severity on peak date
-    Province.all.collect{|p| [p.cases.where('date(day) = ?', (CrushCurve::REFERENCE_DATE + 1.day).to_date).sum(:reports), p]}.sort.reverse.each_with_index do |p,i|
-      p[1].update position: i
+    # Sort provinces by at (early) peak of second wave
+    ProvinceTally.where('day = ?', CrushCurve::REFERENCE_DATE).order(new_cases: :desc).each_with_index do |t, i|
+      t.province.update position: i
     end
 
     # Sort municipalities by severity on reference date

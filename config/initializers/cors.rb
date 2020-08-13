@@ -7,7 +7,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
   end
 end
 
-Rails.application.config.hosts << "pletdecurve.nl" << "127.0.0.1" << "ldduczhc5j7auzk77lbr3zvaihjow7e5kclwn7gomv6ogotoe3jogtid.onion"
+Rails.application.config.hosts << "pletdecurve.nl" << "www.pletdecurve.nl" << "127.0.0.1" << "ldduczhc5j7auzk77lbr3zvaihjow7e5kclwn7gomv6ogotoe3jogtid.onion"
 
 Rails.application.config.action_dispatch.default_headers = {
   'X-Frame-Options' => 'SAMEORIGIN',

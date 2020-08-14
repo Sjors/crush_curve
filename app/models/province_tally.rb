@@ -27,7 +27,8 @@ class ProvinceTally < ApplicationRecord
   end
 
   def self.expire_cache
-    Rails.cache.delete("ProvinceTally.daily(1)")
-    Rails.cache.delete("ProvinceTally.daily(2)")
+    [1,2].each do |wave|
+      Rails.cache.delete("ProvinceTally.daily(#{wave})")
+    end
   end
 end

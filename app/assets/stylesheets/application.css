@@ -19,6 +19,10 @@ table.winners {
   text-align: center;
 }
 
+td.severe {
+  background-color: #bb00cc
+}
+
 td.bad {
   background-color: #cc0000
 }

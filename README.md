@@ -1,6 +1,6 @@
 # Crush the Curve
 
-![site preview](/preview.png)
+![site preview](preview.png)
 
 Each cell shows the number of positive test results that day. Green is winning.
 Visualization inspired by Yaneer Bar-Yam from [endcoronavirus.org](https://www.endcoronavirus.org).
@@ -9,24 +9,41 @@ a cron job.
 
 ## Develop
 
-To prepare the database:
+### Prerequisite
+
+- [Ruby On Rails](https://gorails.com/setup)
+- PostgreSQL
+- Node.js
+- Yarn
+
+### Setup
+
+Install Ruby gems:
 
 ```sh
-rake db:seed
+bin/bundle install
+```
+
+To create and prepare the PostgreSQL database:
+
+```sh
+bin/rake db:create
+bin/rake db:seed
+bin/rails db:migrate
 ```
 
 To fetch and process data:
 
 ```sh
-rake data:fetch
-rake data:process
-rake data:fetch_provinces
+bin/rake data:fetch
+bin/rake data:process
+bin/rake data:fetch_provinces
 ```
 
 Run the server:
 
 ```sh
-rails s
+bin/rails s
 ```
 
 ## Contribute
@@ -41,7 +58,7 @@ The site is currently deployed on an Ubuntu server roughly based on [this guide]
 
 A cron job and bash script take care of syncing and processing data:
 
-```
+```txt
 MAILTO=sjors@sprovoost.nl
 # m h  dom mon dow   command
 39 * * * * /usr/bin/cronic ~/rake_sync.sh
@@ -64,7 +81,7 @@ openssl pkcs12 -in crush.p12 -out crush.pem -nodes
 
 Put the certificate password in `.rbenv-vars` on your server:
 
-```
+```txt
 RAILS_MASTER_KEY=...
 DATABASE_URL=postgresql://crush:...@127.0.0.1/crush_curve
 EXCEPTION_FROM_EMAIL=bugs@...
@@ -74,13 +91,13 @@ CERT_PWD=...
 
 Create a directory `shared/certs` and upload crush.pem and crush.p12 to it. Also download Apple's intermediate cert:
 
-```
+```txt
 wget https://developer.apple.com/certificationauthority/AppleWWDRCA.cer
 ```
 
 Finally run a rake task to prepare your application:
 
-```
+```txt
 RAILS_ENV=production bundle exec rake safari:register_app
 ```
 

@@ -15,7 +15,7 @@ class RegionDays extends React.Component {
               { day.date }
             </td>
             {this.transpose([day.cases,day.cases_24]).map((case_count, index) => (
-              <td key={index} className={ (day.recent ? "recent" : case_count[0] > 100 ? "bad" : case_count[0] > 30 ? "mediocre" : case_count[0] > 10 ? "better" : case_count[0] > 0 ? "almost" :  case_count[0] == 0 ? "good" : "correction") }>
+              <td key={index} className={ (day.recent ? "recent" : case_count[0] > 500 ? "severe" : case_count[0] > 100 ? "bad" : case_count[0] > 30 ? "mediocre" : case_count[0] > 10 ? "better" : case_count[0] > 0 ? "almost" :  case_count[0] == 0 ? "good" : "correction") }>
                 { case_count[0] }
                 {
                   case_count[1] > 0 &&

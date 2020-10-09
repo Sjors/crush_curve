@@ -35,6 +35,7 @@ class Province extends React.Component {
               {this.props.municipalities.map(municipality => (
                 <th key={municipality.slug}>{ mun_count > 12 ? municipality.short_name : municipality.name }</th>
               ))}
+              <th>Totaal</th>
             </tr>
           </thead>
           <RegionDays days={ this.props.days } />
@@ -45,6 +46,7 @@ class Province extends React.Component {
               {this.props.municipalities.map(municipality => (
                 <Feed key={ municipality.slug } province={ this.props.province } municipality={ municipality } subscriptions={ this.state.subscriptions } onChange={ this.handleChange } />
               ))}
+              <td>Totaal</td>
             </tr>
           </tfoot>
         </table>

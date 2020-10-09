@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom'
 
 class RegionDays extends React.Component {
   transpose = m => m[0].map((x,i) => m.map(x => x[i]))
+  sum = (total, num) => total + num
 
   render () {
     return (
@@ -23,6 +24,9 @@ class RegionDays extends React.Component {
                 }
               </td>
             ))}
+            <td>
+              {day.cases.reduce(this.sum, 0)}
+            </td>
           </tr>
         ))}
       </tbody>

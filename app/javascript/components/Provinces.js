@@ -16,6 +16,7 @@ class Provinces extends React.Component {
                   <a href={ `${ wave }/${ province.slug }` }>{ province.name }</a>
                 </th>
               ))}
+              <th>Totaal</th>
             </tr>
           </thead>
           <RegionDays days={ this.props.days } />
@@ -28,6 +29,7 @@ class Provinces extends React.Component {
                   <a href={ `${ wave }/${ province.slug }` }>{ province.name }</a>
                 </td>
               ))}
+              <td>Totaal</td>
             </tr>
           </tfoot>
         </table>

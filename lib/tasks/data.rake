@@ -20,7 +20,7 @@ namespace :data do
       @last_modified = Time.parse(response["Last-Modified"])
     end
 
-    if @last_modified.to_date < Date.today
+    if @last_fetch_day == Date.yesterday && @last_modified.to_date < Date.today
       puts "Todays records not yet available"
       exit 0 unless args.force == "true"
       puts "Processing anyway..."
@@ -83,7 +83,7 @@ namespace :data do
       @last_modified = Time.parse(response["Last-Modified"])
     end
 
-    if @last_modified.to_date < Date.today
+    if @last_fetch_day == Date.yesterday &&  @last_modified.to_date < Date.today
       puts "Todays records not yet available"
       exit 0 unless args.force == "true"
       puts "Processing anyway..."

@@ -102,6 +102,8 @@ namespace :data do
     @report_day = @last_modified.to_date
     ProvinceTally.where(report_day: @report_day ).destroy_all
     @csv.group_by { |r| r["Province"] }.each do |province_name, days|
+      # Handle spontanuous rename introduced on January 7th:
+      province_name = "Friesland" if province_name == "Fryslân"
       province = Province.find_by(name: province_name)
       throw "Province #{ province_name } not found" if province.nil?
       (CrushCurve::FIRST_PATIENT_DATE..@report_day).each do |d|

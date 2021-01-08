@@ -50,3 +50,8 @@ td.correction {
 td.recent {
   background-color: #D3D3D3;
 }
+
+td.municipality_cancelled {
+  background-color: #DEDEDE;
+  color: transparent;
+}

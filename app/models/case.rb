@@ -32,6 +32,9 @@ class Case < ApplicationRecord
         },
         cases_24: province.municipalities.collect{|municipality|
           0
+        },
+        municipality_cancelled:  province.municipalities.collect{|municipality|
+          municipality.cancelled(day)
         }
       }
     }

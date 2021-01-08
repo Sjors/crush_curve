@@ -141,6 +141,22 @@ namespace :data do
 
       loop do
         reference_day = reference_day.yesterday
+        # Hack around municipality reorg (gemeentelijke herindeling)
+        if c.day.to_date == Date.new(2021,1,7)
+          case c.municipality.cbs_id
+          when "GM1979" # Eemsdelta = Appingedam + Delfzijl + Loppersum
+            reference_day = Case.new(reports:
+              Municipality.find_by(cbs_id: "GM0003").cases.where(day: Date.new(2021,1,6)).first.reports +
+              Municipality.find_by(cbs_id: "GM0010").cases.where(day: Date.new(2021,1,6)).first.reports +
+              Municipality.find_by(cbs_id: "GM0024").cases.where(day: Date.new(2021,1,6)).first.reports
+            )
+          when "GM0824", "GM0865", "GM0757", "GM0855"
+            # It's unclear how Haaren cases were split 4-ways and thrown into Oisterwijk, Tilburg, Vught en Boxtel
+            # Reset to 0 daily cases instead
+            reference_day.reports = c.reports
+          end
+        end
+
         if reference_day.nil?
           throw "Found 1+ day gap in data on #{ c.day.to_date } in #{ c.municipality.name } (#{ c.municipality.cbs_id }), bailing out"
         end
@@ -175,6 +191,7 @@ namespace :data do
     # Good news:
     Case.where(notified: false, new_reports: 0).where("date(day) = ?", Time.now.to_date).each do |c|
       c.update notified: true
+      next if c.municipality.cancelled(c.day)
       # Only notify about zero cases if there were more than zero cases yesterday:
       if c.yesterday.new_reports > 0
         c.municipality.subscriptions.each do |s|
@@ -190,6 +207,7 @@ namespace :data do
     # Bad news:
     Case.where(notified: false).where("date(day) = ? AND new_reports > 0", Time.now.to_date).each do |c|
       c.update notified: true
+      next if c.municipality.cancelled(c.day)
       c.municipality.subscriptions.each do |s|
         s.notify(
           "Corona in #{ c.municipality.name }",

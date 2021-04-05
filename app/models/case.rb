@@ -16,15 +16,8 @@ class Case < ApplicationRecord
     }
   end
 
-  def self.daily_per_municipality(wave, province)
-    range = case wave
-      when 1
-        where("day >= ?", CrushCurve::FIRST_PATIENT_DATE).where("day < ?", CrushCurve::WAVE_2_START_DATE)
-      when 2
-        where("day >= ?", CrushCurve::WAVE_2_START_DATE)
-      end
-
-    range.where("day >= ?", CrushCurve::START_DATE + 1.day).distinct.order("date(day) asc").pluck("date(day)").collect {|day|
+  def self.daily_per_municipality(province)
+    where("day >= ?", CrushCurve::START_DATE + 1.day).distinct.order("date(day) asc").pluck("date(day)").collect {|day|
       {
         date: day.to_date.strftime("%d/%m"),
         cases: province.municipalities.collect{|municipality|
@@ -42,9 +35,7 @@ class Case < ApplicationRecord
 
   def self.expire_cache
     Province.all.each do |province|
-      [1,2].each do |wave|
-        Rails.cache.delete("Case.daily_per_municipality(#{wave},#{province.id})")
-      end
+      Rails.cache.delete("Case.daily_per_municipality(#{province.id})")
     end
   end
 

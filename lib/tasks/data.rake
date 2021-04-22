@@ -40,6 +40,10 @@ namespace :data do
       # Ignore province rows at the end
       next if row["Municipality_code"].nil?
 
+      day = row["Date_of_report"].to_date.to_time(:utc) # ignore RIVM reporting time
+      # Ignore rows before start date
+      next if day < CrushCurve::START_DATE
+
       # Check if we already have this municipality
       municipality = Municipality.create_with(
         province: Province.find_by(name: row["Province"]),
@@ -49,7 +53,7 @@ namespace :data do
       # Record cases
       c = Case.find_or_create_by(
         municipality: municipality,
-        day: row["Date_of_report"].to_date.to_time(:utc) # ignore RIVM reporting time
+        day: day
       )
       # Set or update info, mark for processing if new or updated
       c.reports = row["Total_reported"]
@@ -95,7 +99,10 @@ namespace :data do
       response = http.request_get(@path)
       puts "Parsing CSV..."
       Time.zone = "Europe/Amsterdam"
-      @csv = CSV.parse(response.body, headers: true, encoding: Encoding::UTF_8, col_sep: "\;", converters: [->(v) { Time.strptime(v, '%Y-%m-%d %I:%M:%S') rescue v }, ->(v) { Date.strptime(v, '%Y-%m-%d') rescue v }, :numeric])
+      # Skip older records, preserve header
+      lines = response.body.lines
+      truncated_csv = ([lines[0]] + lines.drop(1230991)).join
+      @csv = CSV.parse(truncated_csv, headers: true, encoding: Encoding::UTF_8, col_sep: "\;", converters: [->(v) { Time.strptime(v, '%Y-%m-%d %I:%M:%S') rescue v }, ->(v) { Date.strptime(v, '%Y-%m-%d') rescue v }, :numeric])
     end
 
     puts "Processing records for #{ @last_modified.to_date }..."
@@ -106,7 +113,7 @@ namespace :data do
       province_name = "Friesland" if province_name == "Fryslân"
       province = Province.find_by(name: province_name)
       throw "Province #{ province_name } not found" if province.nil?
-      (CrushCurve::FIRST_PATIENT_DATE..@report_day).each do |d|
+      (CrushCurve::START_DATE..@report_day).each do |d|
         tally = days.select{|day| day["Date_statistics"] == d }.count
         ProvinceTally.create!(report_day: @report_day, province: province, day: d, new_cases: tally)
       end
@@ -144,22 +151,6 @@ namespace :data do
 
       loop do
         reference_day = reference_day.yesterday
-        # Hack around municipality reorg (gemeentelijke herindeling)
-        if c.day.to_date == Date.new(2021,1,7)
-          case c.municipality.cbs_id
-          when "GM1979" # Eemsdelta = Appingedam + Delfzijl + Loppersum
-            reference_day = Case.new(reports:
-              Municipality.find_by(cbs_id: "GM0003").cases.where(day: Date.new(2021,1,6)).first.reports +
-              Municipality.find_by(cbs_id: "GM0010").cases.where(day: Date.new(2021,1,6)).first.reports +
-              Municipality.find_by(cbs_id: "GM0024").cases.where(day: Date.new(2021,1,6)).first.reports
-            )
-          when "GM0824", "GM0865", "GM0757", "GM0855"
-            # It's unclear how Haaren cases were split 4-ways and thrown into Oisterwijk, Tilburg, Vught en Boxtel
-            # Reset to 0 daily cases instead
-            reference_day.reports = c.reports
-          end
-        end
-
         if reference_day.nil?
           throw "Found 1+ day gap in data on #{ c.day.to_date } in #{ c.municipality.name } (#{ c.municipality.cbs_id }), bailing out"
         end
@@ -173,13 +164,13 @@ namespace :data do
       end
     end
 
-    # Sort provinces by at (early) peak of second wave
-    ProvinceTally.where(report_day: Date.today).where('day = ?', CrushCurve::REFERENCE_DATE).order(new_cases: :desc).each_with_index do |t, i|
+    # Sort provinces by severity on reference date
+    ProvinceTally.where(report_day: Date.today).where('day = ?', CrushCurve::START_DATE + 1.day).order(new_cases: :desc).each_with_index do |t, i|
       t.province.update position: i
     end
 
     # Sort municipalities by severity on reference date
-    Municipality.all.collect{|p| [p.cases.where('date(day) = ?', (CrushCurve::REFERENCE_DATE + 1.day).to_date).sum(:reports), p]}.sort.reverse.each_with_index do |p,i|
+    Municipality.all.collect{|p| [p.cases.where('date(day) = ?', (CrushCurve::START_DATE + 1.day).to_date).sum(:reports), p]}.sort.reverse.each_with_index do |p,i|
       p[1].update position: i
     end
 

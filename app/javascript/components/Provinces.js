@@ -4,7 +4,6 @@ import RegionDays from "./RegionDays"
 
 class Provinces extends React.Component {
   render () {
-    const wave = this.props.wave == 2 ? "" : `/wave/${ this.props.wave }`
     return (
       <div className="table-responsive">
         <table className="winners table table-bordered table-sm provinces">
@@ -13,7 +12,7 @@ class Provinces extends React.Component {
               <th scope="col" />
               {this.props.provinces.map(province => (
                 <th key={province.cbs_n} scope="col">
-                  <a href={ `${ wave }/${ province.slug }` }>{ province.name }</a>
+                  <a href={ `${ province.slug }` }>{ province.name }</a>
                 </th>
               ))}
               <th>Totaal</th>
@@ -26,7 +25,7 @@ class Provinces extends React.Component {
               <td scope="col" />
               {this.props.provinces.map(province => (
                 <td key={province.cbs_n} scope="col">
-                  <a href={ `${ wave }/${ province.slug }` }>{ province.name }</a>
+                  <a href={ `${ province.slug }` }>{ province.name }</a>
                 </td>
               ))}
               <td>Totaal</td>

@@ -1,10 +1,6 @@
 Rails.application.routes.draw do
   match '(*any)', to: redirect(subdomain: ''), via: :all, constraints: {subdomain: 'www'}
 
-  scope '/wave/:wave_id' do
-    resources :provinces, :path => ''
-  end
-
   resources :provinces, :path => '' do
     scope format: true, constraints: { format: /rss/ } do
         resources :municipalities, :path => ''

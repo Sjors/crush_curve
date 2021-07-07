@@ -1,4 +1,6 @@
 class SafariController < ApplicationController
+  skip_before_action :verify_authenticity_token
+
   def log
     render json: {message: 'ok'}, status: 200
   end

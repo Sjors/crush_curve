@@ -2,9 +2,9 @@ class SafariSubscription < ApplicationRecord
   has_many :subscriptions, :dependent => :destroy
 
   def notify(title, body, url_args)
-    app = Rpush::Apns::App.find_by_name("crush_curve")
+    app = Rpush::Apns2::App.find_by_name("crush_curve")
 
-    Rpush::Apns::Notification.create!(
+    Rpush::Apns2::Notification.create!(
       app: app,
       device_token: device_token,
       alert: {

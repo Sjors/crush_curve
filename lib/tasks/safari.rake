@@ -2,7 +2,7 @@ require 'push_package'
 namespace 'safari' do :env
   desc "Register app"
   task :register_app => [:environment] do
-    app = Rpush::Apns::App.new
+    app = Rpush::Apns2::App.new
     app.name = "crush_curve"
     app.certificate = File.read("certs/crush.pem")
     app.environment = "production"

@@ -27,7 +27,7 @@ class SafariSubscription < ApplicationRecord
     }
     iconset_path = 'app/assets/images/safari_iconset'
     certificate = 'certs/crush.p12'
-    intermediate_cert = 'certs/AppleWWDRCA.cer'
+    intermediate_cert = 'certs/AppleWWDRCAG3.cer'
     package = PushPackage.new(website_params, iconset_path, certificate, ENV['CERT_PWD'], intermediate_cert)
     package.save(path)
     return path

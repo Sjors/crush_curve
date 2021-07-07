@@ -22,7 +22,7 @@ class SafariController < ApplicationController
 
   # This is called after #package
   def register
-    unless request.authorization.start_with? "ApplePushNotifications"
+    unless request.authorization.split(" ").length == 2
       render json: { message: 'Bad request' }, status: :unprocessable_entity
       return
     end

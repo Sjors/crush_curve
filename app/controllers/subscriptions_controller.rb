@@ -28,7 +28,7 @@ class SubscriptionsController < ApplicationController
   end
 
   def get_safari_subscription
-    @safari_subscription = SafariSubscription.find_or_create_by(auth_token: @auth_token)
+    @safari_subscription = SafariSubscription.find_by!(auth_token: @auth_token)
   end
 
   def get_municipality

@@ -2,7 +2,6 @@ class SubscriptionsController < ApplicationController
   before_action :get_auth_token
   before_action :get_municipality
   before_action :get_safari_subscription
-  before_action :at_least_one_subscription
 
   def add
     # Ignore if already subscribed
@@ -29,16 +28,11 @@ class SubscriptionsController < ApplicationController
   end
 
   def get_safari_subscription
-    @safari_subscription = SafariSubscription.find_by(auth_token: @auth_token)
+    @safari_subscription = SafariSubscription.find_or_create_by(auth_token: @auth_token)
   end
 
   def get_municipality
     @municipality = Municipality.find(params[:municipality_id])
   end
 
-  def at_least_one_subscription
-    if @safari_subscription.nil?
-      render json: { message: 'Bad request' }, status: :unprocessable_entity
-    end
-  end
 end
